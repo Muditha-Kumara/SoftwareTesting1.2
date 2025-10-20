@@ -14,24 +14,12 @@ const {
 
 describe('Task Management Functions', () => {
   beforeEach(() => {
-    // Reset DOM
-    document.getElementById('taskInput').value = '';
-    document.getElementById('taskList').innerHTML = '';
+    // Clear arrays manually
+    taskList.length = 0;
     
-    // Reset taskList array
-    global.taskList = [];
-    
-    // Re-mock localStorage methods to ensure they are jest.fn()
-    const localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    };
-    global.localStorage = localStorageMock;
-    window.localStorage = localStorageMock;
-    localStorage = localStorageMock; // Ensure global reference
-    global.alert = jest.fn();
+    // Spy on localStorage methods
+    jest.spyOn(Storage.prototype, 'setItem');
+    jest.spyOn(Storage.prototype, 'getItem');
   });
 
   describe('addTask function', () => {
@@ -80,7 +68,7 @@ describe('Task Management Functions', () => {
       // Act
       addTask();
       // Assert
-      expect(window.localStorage.setItem).toHaveBeenCalled();
+      expect(localStorage.setItem).toHaveBeenCalled();
     });
   });
 
@@ -108,19 +96,13 @@ describe('Task Management Functions', () => {
       // Act
       toggleTask(0);
       // Assert
-      expect(window.localStorage.setItem).toHaveBeenCalled();
+      expect(localStorage.setItem).toHaveBeenCalled();
     });
   });
 
   describe('deleteTask function', () => {
-    beforeEach(() => {
-      // Setup test data
-      taskList.push({ text: 'Task 1', completed: false });
-      taskList.push({ text: 'Task 2', completed: true });
-    });
-
     test('should remove task from taskList', () => {
-      // Arrange
+      // Arrange - add two tasks
       document.getElementById('taskInput').value = 'Task 1';
       addTask();
       document.getElementById('taskInput').value = 'Task 2';
@@ -139,7 +121,7 @@ describe('Task Management Functions', () => {
       // Act
       deleteTask(0);
       // Assert
-      expect(window.localStorage.setItem).toHaveBeenCalled();
+      expect(localStorage.setItem).toHaveBeenCalled();
     });
   });
 });

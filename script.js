@@ -58,11 +58,15 @@ function deleteTask(index) {
 function archiveCompleted() {
     const completedTasks = taskList.filter(task => task.completed);
 
-    // Move completed tasks to history array
-    historyList = historyList.concat(completedTasks);
+    // Move completed tasks to history array (modify in place)
+    completedTasks.forEach(task => historyList.push(task));
 
-    // Remove completed tasks from current list
-    taskList = taskList.filter(task => !task.completed);
+    // Remove completed tasks from current list (modify in place)
+    for (let i = taskList.length - 1; i >= 0; i--) {
+        if (taskList[i].completed) {
+            taskList.splice(i, 1);
+        }
+    }
 
     renderTasks();
     renderArchive();
@@ -165,9 +169,20 @@ function retrieveTasksFromLocalStorage() {
     if (savedData) {
         try {
             const parsed = JSON.parse(savedData);
-            taskList = parsed.tasks || [];
-            importantTaskList = parsed.important || [];
-            historyList = parsed.history || [];
+            // Modify arrays in place instead of reassigning
+            taskList.length = 0;
+            importantTaskList.length = 0;
+            historyList.length = 0;
+            
+            if (parsed.tasks) {
+                parsed.tasks.forEach(task => taskList.push(task));
+            }
+            if (parsed.important) {
+                parsed.important.forEach(task => importantTaskList.push(task));
+            }
+            if (parsed.history) {
+                parsed.history.forEach(task => historyList.push(task));
+            }
         } catch (e) {
             // If JSON is corrupted, do nothing or handle error
             console.warn('Data in localStorage is invalid JSON');

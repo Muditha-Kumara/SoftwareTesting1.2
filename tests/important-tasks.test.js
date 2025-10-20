@@ -11,24 +11,12 @@ const {
 
 describe('Important Task Functions', () => {
   beforeEach(() => {
-    // Reset DOM
-    document.getElementById('importantTaskInput').value = '';
-    document.getElementById('importantTaskList').innerHTML = '';
+    // Clear arrays manually
+    importantTaskList.length = 0;
     
-    // Reset importantTaskList array
-    global.importantTaskList = [];
-    
-    // Re-mock localStorage methods to ensure they are jest.fn()
-    const localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    };
-    global.localStorage = localStorageMock;
-    window.localStorage = localStorageMock;
-    localStorage = localStorageMock; // Ensure global reference
-    global.alert = jest.fn();
+    // Spy on localStorage methods
+    jest.spyOn(Storage.prototype, 'setItem');
+    jest.spyOn(Storage.prototype, 'getItem');
   });
 
   describe('addImportantTask function', () => {
@@ -111,14 +99,8 @@ describe('Important Task Functions', () => {
   });
 
   describe('deleteImportantTask function', () => {
-    beforeEach(() => {
-      // Setup test data
-      importantTaskList.push({ text: 'Important task 1', completed: false });
-      importantTaskList.push({ text: 'Important task 2', completed: true });
-    });
-
     test('should remove important task from importantTaskList', () => {
-      // Arrange
+      // Arrange - add two tasks
       document.getElementById('importantTaskInput').value = 'Important task 1';
       addImportantTask();
       document.getElementById('importantTaskInput').value = 'Important task 2';
@@ -138,7 +120,7 @@ describe('Important Task Functions', () => {
       // Act
       deleteImportantTask(0);
       // Assert
-      expect(window.localStorage.setItem).toHaveBeenCalled();
+      expect(localStorage.setItem).toHaveBeenCalled();
     });
   });
 });

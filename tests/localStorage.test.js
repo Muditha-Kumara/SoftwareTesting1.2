@@ -13,21 +13,14 @@ const {
 
 describe('LocalStorage Functions', () => {
   beforeEach(() => {
-    // Reset arrays and DOM
-    global.taskList = [];
-    global.importantTaskList = [];
-    global.historyList = [];
-    // Re-mock localStorage methods to ensure they are jest.fn()
-    const localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    };
-    global.localStorage = localStorageMock;
-    window.localStorage = localStorageMock;
-    localStorage = localStorageMock; // Ensure global reference
-    global.alert = jest.fn();
+    // Clear arrays manually
+    taskList.length = 0;
+    importantTaskList.length = 0;
+    historyList.length = 0;
+    
+    // Spy on localStorage methods
+    jest.spyOn(Storage.prototype, 'setItem');
+    jest.spyOn(Storage.prototype, 'getItem');
   });
 
   describe('saveTasksToLocalStorage function', () => {
@@ -41,7 +34,7 @@ describe('LocalStorage Functions', () => {
       saveTasksToLocalStorage();
       
       // Assert
-      expect(window.localStorage.setItem).toHaveBeenCalledWith(
+      expect(localStorage.setItem).toHaveBeenCalledWith(
         'todoData', 
         JSON.stringify({
           tasks: taskList,
@@ -56,7 +49,7 @@ describe('LocalStorage Functions', () => {
       saveTasksToLocalStorage();
       
       // Assert
-      expect(window.localStorage.setItem).toHaveBeenCalledWith(
+      expect(localStorage.setItem).toHaveBeenCalledWith(
         'todoData',
         JSON.stringify({
           tasks: [],
@@ -119,7 +112,7 @@ describe('LocalStorage Functions', () => {
     test('should handle partial data in localStorage', () => {
       // Arrange
       const partialData = {
-        tasks: [{ text: 'Only tasks', completed: false }]
+        tasks: [{ text: 'Regular task', completed: false }]
         // missing important and history
       };
       localStorage.getItem.mockReturnValue(JSON.stringify(partialData));
@@ -135,13 +128,12 @@ describe('LocalStorage Functions', () => {
   });
 
   describe('archiveCompleted function', () => {
-    beforeEach(() => {
+    test('should move completed tasks to history', () => {
+      // Arrange
       taskList.push({ text: 'Incomplete task', completed: false });
       taskList.push({ text: 'Complete task 1', completed: true });
       taskList.push({ text: 'Complete task 2', completed: true });
-    });
-
-    test('should move completed tasks to history', () => {
+      
       // Act
       archiveCompleted();
       
@@ -152,6 +144,11 @@ describe('LocalStorage Functions', () => {
     });
 
     test('should remove completed tasks from taskList', () => {
+      // Arrange
+      taskList.push({ text: 'Incomplete task', completed: false });
+      taskList.push({ text: 'Complete task 1', completed: true });
+      taskList.push({ text: 'Complete task 2', completed: true });
+      
       // Act
       archiveCompleted();
       
@@ -163,10 +160,8 @@ describe('LocalStorage Functions', () => {
 
     test('should handle case with no completed tasks', () => {
       // Arrange - all tasks incomplete
-      taskList = [
-        { text: 'Incomplete 1', completed: false },
-        { text: 'Incomplete 2', completed: false }
-      ];
+      taskList.push({ text: 'Incomplete 1', completed: false });
+      taskList.push({ text: 'Incomplete 2', completed: false });
       
       // Act
       archiveCompleted();

@@ -31,20 +31,31 @@ document.body.innerHTML = `
   </div>
 `;
 
-// Load the script after DOM setup
+// Setup localStorage mock before loading script
+const mockLocalStorage = createLocalStorageMock();
+global.localStorage = mockLocalStorage;
+window.localStorage = mockLocalStorage;
+
+// Load the script after DOM and localStorage setup
 require('../script.js');
 
 beforeEach(() => {
-  // Create fresh localStorage mock with spies
-  const localStorageMock = createLocalStorageMock();
-  global.localStorage = localStorageMock;
-  window.localStorage = localStorageMock;
+  // Clear and reset all mock calls
+  jest.clearAllMocks();
+  
+  // Reset alert mock
   global.alert = jest.fn();
 
-  // Reset arrays
-  global.taskList.length = 0;
-  global.importantTaskList.length = 0;
-  global.historyList.length = 0;
+  // Reset arrays by clearing them (not reassigning)
+  while (global.taskList.length > 0) {
+    global.taskList.pop();
+  }
+  while (global.importantTaskList.length > 0) {
+    global.importantTaskList.pop();
+  }
+  while (global.historyList.length > 0) {
+    global.historyList.pop();
+  }
   
   // Clear input fields
   document.getElementById('taskInput').value = '';
