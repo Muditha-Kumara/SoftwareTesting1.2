@@ -37,9 +37,6 @@ jest-test-results.json
 # Mac
 *.DS_Store
 
-# Reports
-Report/*.md
-
 # Artifacts
 Artifacts/
 
