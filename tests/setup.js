@@ -35,11 +35,23 @@ document.body.innerHTML = `
 require('../script.js');
 
 beforeEach(() => {
-  global.localStorage = createLocalStorageMock();
+  // Create fresh localStorage mock with spies
+  const localStorageMock = createLocalStorageMock();
+  global.localStorage = localStorageMock;
+  window.localStorage = localStorageMock;
   global.alert = jest.fn();
 
   // Reset arrays
-  global.taskList = [];
-  global.importantTaskList = [];
-  global.historyList = [];
+  global.taskList.length = 0;
+  global.importantTaskList.length = 0;
+  global.historyList.length = 0;
+  
+  // Clear input fields
+  document.getElementById('taskInput').value = '';
+  document.getElementById('importantTaskInput').value = '';
+  
+  // Clear DOM lists
+  document.getElementById('taskList').innerHTML = '';
+  document.getElementById('importantTaskList').innerHTML = '';
+  document.getElementById('archiveList').innerHTML = '';
 });
