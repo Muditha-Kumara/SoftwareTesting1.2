@@ -174,3 +174,22 @@ function retrieveTasksFromLocalStorage() {
         }
     }
 }
+
+// Export functions for Jest testing
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    addTask,
+    toggleTask,
+    deleteTask,
+    addImportantTask,
+    toggleImportantTask,
+    deleteImportantTask,
+    saveTasksToLocalStorage,
+    retrieveTasksFromLocalStorage,
+    archiveCompleted,
+    // add others if needed
+    taskList,
+    importantTaskList,
+    historyList
+  };
+}

@@ -2,17 +2,32 @@
  * @jest-environment jsdom
  */
 
+const {
+  saveTasksToLocalStorage,
+  retrieveTasksFromLocalStorage,
+  archiveCompleted,
+  taskList,
+  importantTaskList,
+  historyList
+} = require('../script.js');
+
 describe('LocalStorage Functions', () => {
   beforeEach(() => {
-    // Reset arrays
+    // Reset arrays and DOM
     global.taskList = [];
-    global.importantTaskList = [];  
+    global.importantTaskList = [];
     global.historyList = [];
-    
-    // Clear localStorage mock
-    localStorage.getItem.mockClear();
-    localStorage.setItem.mockClear();
-    localStorage.removeItem.mockClear();
+    // Re-mock localStorage methods to ensure they are jest.fn()
+    const localStorageMock = {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+    };
+    global.localStorage = localStorageMock;
+    window.localStorage = localStorageMock;
+    localStorage = localStorageMock; // Ensure global reference
+    global.alert = jest.fn();
   });
 
   describe('saveTasksToLocalStorage function', () => {
@@ -26,7 +41,7 @@ describe('LocalStorage Functions', () => {
       saveTasksToLocalStorage();
       
       // Assert
-      expect(localStorage.setItem).toHaveBeenCalledWith(
+      expect(window.localStorage.setItem).toHaveBeenCalledWith(
         'todoData', 
         JSON.stringify({
           tasks: taskList,
@@ -41,7 +56,7 @@ describe('LocalStorage Functions', () => {
       saveTasksToLocalStorage();
       
       // Assert
-      expect(localStorage.setItem).toHaveBeenCalledWith(
+      expect(window.localStorage.setItem).toHaveBeenCalledWith(
         'todoData',
         JSON.stringify({
           tasks: [],

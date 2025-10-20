@@ -2,6 +2,16 @@
  * @jest-environment jsdom
  */
 
+const {
+  addTask,
+  toggleTask,
+  deleteTask,
+  saveTasksToLocalStorage,
+  retrieveTasksFromLocalStorage,
+  archiveCompleted,
+  taskList
+} = require('../script.js');
+
 describe('Task Management Functions', () => {
   beforeEach(() => {
     // Reset DOM
@@ -11,10 +21,17 @@ describe('Task Management Functions', () => {
     // Reset taskList array
     global.taskList = [];
     
-    // Clear localStorage mock
-    localStorage.getItem.mockClear();
-    localStorage.setItem.mockClear();
-    global.alert.mockClear();
+    // Re-mock localStorage methods to ensure they are jest.fn()
+    const localStorageMock = {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+    };
+    global.localStorage = localStorageMock;
+    window.localStorage = localStorageMock;
+    localStorage = localStorageMock; // Ensure global reference
+    global.alert = jest.fn();
   });
 
   describe('addTask function', () => {
@@ -60,12 +77,10 @@ describe('Task Management Functions', () => {
     test('should save to localStorage after adding task', () => {
       // Arrange
       document.getElementById('taskInput').value = 'Test task';
-      
       // Act
       addTask();
-      
       // Assert
-      expect(localStorage.setItem).toHaveBeenCalled();
+      expect(window.localStorage.setItem).toHaveBeenCalled();
     });
   });
 
@@ -87,11 +102,13 @@ describe('Task Management Functions', () => {
     });
 
     test('should save to localStorage after toggling', () => {
+      // Arrange
+      document.getElementById('taskInput').value = 'Test task';
+      addTask();
       // Act
       toggleTask(0);
-      
       // Assert
-      expect(localStorage.setItem).toHaveBeenCalled();
+      expect(window.localStorage.setItem).toHaveBeenCalled();
     });
   });
 
@@ -104,22 +121,25 @@ describe('Task Management Functions', () => {
 
     test('should remove task from taskList', () => {
       // Arrange
+      document.getElementById('taskInput').value = 'Task 1';
+      addTask();
+      document.getElementById('taskInput').value = 'Task 2';
+      addTask();
       const initialLength = taskList.length;
-      
       // Act
       deleteTask(0);
-      
       // Assert
       expect(taskList.length).toBe(initialLength - 1);
       expect(taskList[0].text).toBe('Task 2');
     });
-
     test('should save to localStorage after deletion', () => {
+      // Arrange
+      document.getElementById('taskInput').value = 'Test task';
+      addTask();
       // Act
       deleteTask(0);
-      
       // Assert
-      expect(localStorage.setItem).toHaveBeenCalled();
+      expect(window.localStorage.setItem).toHaveBeenCalled();
     });
   });
 });

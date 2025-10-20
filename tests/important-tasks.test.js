@@ -2,6 +2,13 @@
  * @jest-environment jsdom
  */
 
+const {
+  addImportantTask,
+  toggleImportantTask,
+  deleteImportantTask,
+  importantTaskList
+} = require('../script.js');
+
 describe('Important Task Functions', () => {
   beforeEach(() => {
     // Reset DOM
@@ -11,10 +18,17 @@ describe('Important Task Functions', () => {
     // Reset importantTaskList array
     global.importantTaskList = [];
     
-    // Clear mocks
-    localStorage.getItem.mockClear();
-    localStorage.setItem.mockClear();
-    global.alert.mockClear();
+    // Re-mock localStorage methods to ensure they are jest.fn()
+    const localStorageMock = {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+    };
+    global.localStorage = localStorageMock;
+    window.localStorage = localStorageMock;
+    localStorage = localStorageMock; // Ensure global reference
+    global.alert = jest.fn();
   });
 
   describe('addImportantTask function', () => {
@@ -105,22 +119,26 @@ describe('Important Task Functions', () => {
 
     test('should remove important task from importantTaskList', () => {
       // Arrange
+      document.getElementById('importantTaskInput').value = 'Important task 1';
+      addImportantTask();
+      document.getElementById('importantTaskInput').value = 'Important task 2';
+      addImportantTask();
       const initialLength = importantTaskList.length;
-      
       // Act
       deleteImportantTask(0);
-      
       // Assert
       expect(importantTaskList.length).toBe(initialLength - 1);
       expect(importantTaskList[0].text).toBe('Important task 2');
     });
 
     test('should save to localStorage after deletion', () => {
+      // Arrange
+      document.getElementById('importantTaskInput').value = 'Important task';
+      addImportantTask();
       // Act
       deleteImportantTask(0);
-      
       // Assert
-      expect(localStorage.setItem).toHaveBeenCalled();
+      expect(window.localStorage.setItem).toHaveBeenCalled();
     });
   });
 });

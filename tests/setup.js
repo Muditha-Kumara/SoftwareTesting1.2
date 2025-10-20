@@ -3,13 +3,15 @@
  */
 
 // Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-global.localStorage = localStorageMock;
+function createLocalStorageMock() {
+  return {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+  };
+}
+global.localStorage = createLocalStorageMock();
 
 // Mock alert function
 global.alert = jest.fn();
@@ -31,3 +33,13 @@ document.body.innerHTML = `
 
 // Load the script after DOM setup
 require('../script.js');
+
+beforeEach(() => {
+  global.localStorage = createLocalStorageMock();
+  global.alert = jest.fn();
+
+  // Reset arrays
+  global.taskList = [];
+  global.importantTaskList = [];
+  global.historyList = [];
+});
