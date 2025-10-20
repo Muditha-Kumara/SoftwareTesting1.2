@@ -15,7 +15,7 @@ This report documents the comprehensive testing analysis and implementation of u
 | **Group Members** | Kumara(muditha.kumara@centria.fi), Isiozor(chuks.isiozor@centria.fi)  |
 | **Date Submitted** | 20/10/2025 |
 | **App Version/Commit** | ToDo List v1.0 (Initial Handover) |
-| **Code Repository** | [Insert GitHub/GitLab repository link] |
+| **Code Repository** | https://github.com/Muditha-Kumara/SoftwareTesting1.2/blob/main/Report/ToDo_List_Testing_Report.md|
 
 ---
 
@@ -317,7 +317,7 @@ test_results:
     lines: 91.66%
 ```
 
-#### Commit: b78e981
+#### Commit: [b78e981](https://github.com/Muditha-Kumara/SoftwareTesting1.2/commit/b78e981)
 
 ![alt text](image-3.png)
 ![alt text](image-2.png)
