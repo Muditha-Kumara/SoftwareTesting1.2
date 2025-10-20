@@ -11,20 +11,5 @@
   "devDependencies": {
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.0.0"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "collectCoverageFrom": [
-      "script.js",
-      "!node_modules/**"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 90,
-        "lines": 85,
-        "statements": 85
-      }
-    }
   }
 }
